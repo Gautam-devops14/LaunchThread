@@ -17,7 +17,11 @@ import {
   Layout,
   Code,
   Play,
-  ArrowUp
+  ArrowUp,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Github
 } from "lucide-react";
 
 // Placeholder Image Keys
@@ -815,10 +819,25 @@ export default function App() {
               <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
+              {[
+                { Icon: Twitter, color: "hover:text-[#1DA1F2]", href: "#" },
+                { Icon: Instagram, color: "hover:text-[#E4405F]", href: "#" },
+                { Icon: Linkedin, color: "hover:text-[#0077B5]", href: "#" },
+                { Icon: Github, color: "hover:text-white", href: "#" }
+              ].map((social, i) => (
+                <a 
+                  key={i} 
+                  href={social.href}
+                  className={`text-slate-500 transition-all duration-300 transform hover:scale-110 ${social.color}`}
+                >
+                  <social.Icon className="w-5 h-5" />
+                </a>
+              ))}
+              
                <button 
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:border-white transition-all cursor-pointer"
+                className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:border-white transition-all cursor-pointer ml-4"
                >
                  <ArrowUp className="w-5 h-5" />
                </button>
