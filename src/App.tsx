@@ -26,23 +26,27 @@ import {
 
 // Placeholder Image Keys
 const IMAGES = {
-  profile: "https://ais-pre-gdro6syiiinbxhal3qcwgg-104603966045.run.app/api/artifacts/8617f694-8178-4389-9800-47b1c3132e0e", // Updated with user provided image
+  profile: "/speaker.png", // Updated with user provided image
   projects: {
     gym: {
-      url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop",
+      url: "/fitforge_gym.png",
       features: ["Class Scheduling", "Member Dashboard", "Payment Integration", "Progress Tracking"]
     },
     salon: {
-      url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop",
+      url: "/luxe.png",
       features: ["Stylist Selection", "Service Menu", "Online Deposit", "Auto-Reminders"]
     },
     cafe: {
-      url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop",
+      url: "/food.png",
       features: ["Digital Menu", "Order for Pickup", "Reward Points", "Live Chat"]
     },
-    saas: {
-      url: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format&fit=crop",
-      features: ["Waitlist Form", "Product Roadmap", "Integration List", "Usage Charts"]
+    dental: {
+      url: "/dentisti.png",
+      features: ["Dental Record Integration", "Doctor Selection", "Emergency Booking", "Care Guides"]
+    },
+    carwash: {
+      url: "/car.png",
+      features: ["Select Package", "Home Service Booking", "Member Discounts", "Wash Gallery"]
     }
   }
 };
@@ -91,32 +95,39 @@ export default function App() {
 
   const projects: Project[] = [
     {
+      title: "Bean & Brew Café",
+      cat: "Food & Beverage",
+      tags: ["Digital Menu", "Order for Pickup", "Loyalty"],
+      img: IMAGES.projects.cafe.url,
+      features: IMAGES.projects.cafe.features
+    },
+    {
       title: "FitForge Gym",
       cat: "Fitness & Wellness",
-      tags: ["Booking System", "Mobile App", "Payments"],
+      tags: ["Booking System", "Member Dashboard", "Payments"],
       img: IMAGES.projects.gym.url,
       features: IMAGES.projects.gym.features
     },
     {
       title: "Luxe Salon Studio",
       cat: "Beauty & Lifestyle",
-      tags: ["Appointments", "Gallery", "Reviews"],
+      tags: ["Stylist Selection", "Service Menu", "Reminders"],
       img: IMAGES.projects.salon.url,
       features: IMAGES.projects.salon.features
     },
     {
-      title: "Brew & Bean Café",
-      cat: "Food & Beverage",
-      tags: ["Online Orders", "Menu", "Loyalty"],
-      img: IMAGES.projects.cafe.url,
-      features: IMAGES.projects.cafe.features
+      title: "BrightSmile Dental",
+      cat: "Healthcare",
+      tags: ["Patient Portal", "Booking", "Care Guides"],
+      img: IMAGES.projects.dental.url,
+      features: IMAGES.projects.dental.features
     },
     {
-      title: "LaunchPad SaaS",
-      cat: "Tech Startup",
-      tags: ["Landing Page", "Waitlist", "Analytics"],
-      img: IMAGES.projects.saas.url,
-      features: IMAGES.projects.saas.features
+      title: "CleanRide Car Wash",
+      cat: "Automotive",
+      tags: ["Service Booking", "Wash Gallery", "Membership"],
+      img: IMAGES.projects.carwash.url,
+      features: IMAGES.projects.carwash.features
     }
   ];
 
@@ -366,7 +377,6 @@ export default function App() {
                 <h2 className="text-4xl font-black text-slate-900 mb-6">{selectedProject.title}</h2>
                 <div className="space-y-8">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Core Features</h4>
                     <div className="grid grid-cols-1 gap-3">
                       {selectedProject.features.map((f, idx) => (
                         <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
