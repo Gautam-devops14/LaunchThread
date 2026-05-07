@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-space-grotesk: "Space Grotesk", sans-serif;
+
+  /* Hybrid Theme: Midnight & Pearl */
+  --color-primary: #6366f1;
+  --color-primary-bright: #818cf8;
+  --color-secondary: #a855f7;
+  
+  /* Midnight (Dark) */
+  --color-dark-bg: #090911;
+  --color-dark-surface: #12121f;
+  
+  /* Pearl (Light) */
+  --color-light-bg: #ffffff;
+  --color-light-surface: #f8fafc;
+
+  --spacing-container-max: 1240px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-space-grotesk antialiased bg-white text-slate-900;
+  }
+}
+
+@layer utilities {
+  .bg-midnight-grid {
+    background-color: var(--color-dark-bg);
+    background-image: 
+      linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-8 py-3.5 rounded-full transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] active:scale-95 border border-white/10;
+  }
+
+  .btn-ghost {
+    @apply border border-white/10 bg-white/5 text-white font-bold px-8 py-3.5 rounded-full transition-all hover:bg-white/10 active:scale-95 flex items-center gap-2;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-card-light {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    @apply shadow-xl shadow-slate-200/50;
+  }
+}
