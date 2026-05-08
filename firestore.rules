@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Lead Validation
+    function isValidLead(data) {
+      return data.keys().hasAll(['fullName', 'email', 'phoneNumber', 'createdAt', 'websiteUrl'])
+        && data.keys().size() == 5
+        && data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 200
+        && data.email is string && data.email.size() > 0 && data.email.size() <= 200
+        && data.phoneNumber is string && data.phoneNumber.size() > 0 && data.phoneNumber.size() <= 20
+        && data.websiteUrl is string && data.websiteUrl.size() <= 500
+        && data.createdAt == request.time;
+    }
+
+    match /leads/{leadId} {
+      allow create: if isValidLead(incoming());
+    }
+  }
+}

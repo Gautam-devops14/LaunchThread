@@ -1,5 +1,9 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import { submitLead } from "./lib/firebase";
+
+const InlineWidget = lazy(() => import("react-calendly").then(module => ({ default: module.InlineWidget })));
 import { 
   Bolt, 
   Smartphone, 
@@ -7,6 +11,7 @@ import {
   Search, 
   MessageSquare, 
   CheckCircle, 
+  Check,
   Star, 
   ArrowRight,
   Menu,
@@ -21,7 +26,8 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  Github
+  Github,
+  Plus
 } from "lucide-react";
 
 // Placeholder Image Keys
@@ -68,29 +74,61 @@ interface Project {
   tags: string[];
   img: string;
   features: string[];
+  metaTitle: string;
+  metaDesc: string;
 }
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showLeadMagnet, setShowLeadMagnet] = useState(false);
+  const [showCalendly, setShowCalendly] = useState(false);
   const [leadCaptured, setLeadCaptured] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      q: "How long does it take to build a website?",
+      a: "Our standard delivery time is 48–72 hours for a premium landing page once we have all the required content and strategy details finalized."
+    },
+    {
+      q: "What is your payment structure?",
+      a: "We use a 20/30/50 payment split: 20% to start, 30% after design approval, and 50% upon final completion and launch."
+    },
+    {
+      q: "Do I need to provide the copy and images?",
+      a: "While you can provide them, we often use AI-assisted copywriting and premium assets to ensure your site is optimized for conversion from day one."
+    },
+    {
+      q: "Is hosting included in the price?",
+      a: "The ₹9,999 is for design and development. We help you set up hosting on fast, reliable platforms (like Vercel or Netlify) which often have free tiers for most businesses."
+    },
+    {
+      q: "Will my website be mobile-friendly?",
+      a: "Absolutely. Every site we build is 'Mobile-First,' meaning it looks and performs perfectly on phones, tablets, and desktops."
+    }
+  ];
 
   const openWhatsApp = () => {
     window.open("https://wa.me/918849422544?text=Hi, I want to discuss a project with LaunchThread!", "_blank");
   };
 
   const openCalendly = () => {
-    window.open("https://calendly.com", "_blank");
-    setBookingConfirmed(true);
+    setShowCalendly(true);
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timer);
+    };
   }, []);
 
   const projects: Project[] = [
@@ -99,41 +137,76 @@ export default function App() {
       cat: "Food & Beverage",
       tags: ["Digital Menu", "Order for Pickup", "Loyalty"],
       img: IMAGES.projects.cafe.url,
-      features: IMAGES.projects.cafe.features
+      features: IMAGES.projects.cafe.features,
+      metaTitle: "Bean & Brew Café | Premium Digital Cafe Experience",
+      metaDesc: "Explore our work for Bean & Brew Café - a high-conversion digital menu and loyalty system designed for modern cafes."
     },
     {
       title: "FitForge Gym",
       cat: "Fitness & Wellness",
       tags: ["Booking System", "Member Dashboard", "Payments"],
       img: IMAGES.projects.gym.url,
-      features: IMAGES.projects.gym.features
+      features: IMAGES.projects.gym.features,
+      metaTitle: "FitForge Gym | High-Performance Fitness Platform",
+      metaDesc: "See how LaunchThread built FitForge Gym's membership and booking system to drive 24/7 conversions."
     },
     {
       title: "Luxe Salon Studio",
       cat: "Beauty & Lifestyle",
       tags: ["Stylist Selection", "Service Menu", "Reminders"],
       img: IMAGES.projects.salon.url,
-      features: IMAGES.projects.salon.features
+      features: IMAGES.projects.salon.features,
+      metaTitle: "Luxe Salon Studio | Elegant Booking Experience",
+      metaDesc: "Discover the premium salon booking interface we crafted for Luxe Salon Studio to streamline stylist appointments."
     },
     {
       title: "BrightSmile Dental",
       cat: "Healthcare",
       tags: ["Patient Portal", "Booking", "Care Guides"],
       img: IMAGES.projects.dental.url,
-      features: IMAGES.projects.dental.features
+      features: IMAGES.projects.dental.features,
+      metaTitle: "BrightSmile Dental | Patient-First Healthcare Portal",
+      metaDesc: "A case study on BrightSmile Dental's high-trust patient portal and emergency booking system."
     },
     {
       title: "CleanRide Car Wash",
       cat: "Automotive",
       tags: ["Service Booking", "Wash Gallery", "Membership"],
       img: IMAGES.projects.carwash.url,
-      features: IMAGES.projects.carwash.features
+      features: IMAGES.projects.carwash.features,
+      metaTitle: "CleanRide Car Wash | Tech-Driven Auto Care",
+      metaDesc: "LaunchThread's work for CleanRide Car Wash - integrating subscription memberships and home service scheduling."
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-dark-bg z-[200] flex items-center justify-center">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-6"
+        >
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+            <Zap className="w-8 h-8 text-white animate-pulse" />
+          </div>
+          <span className="text-white font-bold tracking-[0.3em] uppercase text-xs opacity-50">Launching LaunchThread...</span>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen selection:bg-indigo-100">
-      {/* Navigation */}
+    <HelmetProvider>
+      <div className="min-h-screen selection:bg-indigo-100">
+        <Helmet>
+          <title>{selectedProject ? selectedProject.metaTitle : "LaunchThread | Premium Websites for High-Growth Businesses"}</title>
+          <meta name="description" content={selectedProject ? selectedProject.metaDesc : "Stop losing customers to bad websites. LaunchThread builds premium, AI-designed landing pages and booking systems delivered in 48-72 hours."} />
+          <meta property="og:title" content={selectedProject ? selectedProject.metaTitle : "LaunchThread | Premium Fast Websites"} />
+          <meta property="og:description" content={selectedProject ? selectedProject.metaDesc : "Get a high-performance website in days, not months."} />
+          {selectedProject && <meta property="og:image" content={selectedProject.img} />}
+        </Helmet>
+        {/* Navigation */}
       <nav 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled ? "bg-dark-bg/80 backdrop-blur-md border-b border-white/5 py-4 shadow-sm" : "bg-transparent py-8"
@@ -150,10 +223,10 @@ export default function App() {
           </div>
           
           <div className="hidden md:flex items-center gap-10">
-            {["Work", "Process", "Pricing", "Contact"].map((item) => (
+            {["Work", "Process", "AI Workflow", "Pricing", "FAQ", "Contact"].map((item) => (
               <a 
                 key={item} 
-                href={`#${item.toLowerCase()}`}
+                href={`#${item.toLowerCase().replace(" ", "-")}`}
                 className="text-sm font-bold text-slate-400 hover:text-white transition-colors relative group"
               >
                 {item}
@@ -189,10 +262,10 @@ export default function App() {
             className="fixed inset-0 z-40 bg-dark-bg pt-24 px-6 md:hidden"
           >
             <div className="flex flex-col gap-8">
-              {["Work", "Process", "Pricing", "Contact"].map((item) => (
+              {["Work", "Process", "AI Workflow", "Pricing", "FAQ", "Contact"].map((item) => (
                 <a 
                   key={item} 
-                  href={`#${item.toLowerCase()}`}
+                  href={`#${item.toLowerCase().replace(" ", "-")}`}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-3xl font-black text-white hover:text-indigo-400 transition-colors"
                 >
@@ -311,6 +384,7 @@ export default function App() {
                       alt={proj.title} 
                       className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
                     />
                   </div>
                   <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-sm">
@@ -430,18 +504,21 @@ export default function App() {
               </button>
 
                   {leadCaptured ? (
-                <div className="text-center py-12">
-                   <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8">
-                    <CheckCircle className="w-10 h-10 text-green-500" />
+                  <div className="text-center py-12 px-6">
+                    <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Check className="w-10 h-10 text-indigo-600" />
+                    </div>
+                    <h3 className="text-3xl font-black text-slate-900 mb-4">Thanks for connecting!</h3>
+                    <p className="text-slate-500 font-medium leading-relaxed">
+                      We've received your request. We will revert to you in <span className="text-indigo-600 font-bold">12 hours</span> with your free conversion audit.
+                    </p>
+                    <button 
+                      onClick={() => { setShowLeadMagnet(false); setLeadCaptured(false); }}
+                      className="mt-8 text-indigo-600 font-bold uppercase tracking-widest text-xs hover:tracking-[0.2em] transition-all"
+                    >
+                      Close Window
+                    </button>
                   </div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-4 font-space-grotesk">Done</h3>
-                  <button 
-                    onClick={() => { setShowLeadMagnet(false); setLeadCaptured(false); }}
-                    className="mt-8 text-indigo-600 font-bold uppercase tracking-widest text-xs hover:underline"
-                  >
-                    Close Window
-                  </button>
-                </div>
               ) : (
                 <>
                   <div className="text-center mb-8">
@@ -452,21 +529,50 @@ export default function App() {
                     <p className="text-slate-500 font-medium">Enter your details and I'll send you a 5-minute video teardown of how to increase your conversion rate.</p>
                   </div>
 
-                  <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setLeadCaptured(true); }}>
+                  <form 
+                    className="space-y-4" 
+                    onSubmit={async (e) => { 
+                      e.preventDefault(); 
+                      setIsSubmitting(true);
+                      const formData = new FormData(e.currentTarget);
+                      const name = formData.get("fullName") as string;
+                      const email = formData.get("email") as string;
+                      const phone = formData.get("phoneNumber") as string;
+                      const url = formData.get("websiteUrl") as string || "";
+                      
+                      try {
+                        await submitLead(name, email, phone, url);
+                        setLeadCaptured(true);
+                      } catch (err) {
+                        console.error(err);
+                        alert("Failed to submit. Please try again.");
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
+                  >
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Full Name</label>
-                      <input type="text" required placeholder="John Doe" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
+                      <input name="fullName" type="text" required placeholder="John Doe" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Email Address</label>
-                      <input type="email" required placeholder="john@example.com" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
+                      <input name="email" type="email" required placeholder="john@example.com" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Phone Number</label>
+                      <input name="phoneNumber" type="tel" required placeholder="+91 00000 00000" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Website URL (Optional)</label>
-                      <input type="url" placeholder="https://yourwebsite.com" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
+                      <input name="websiteUrl" type="url" placeholder="https://yourwebsite.com" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
                     </div>
-                    <button type="submit" className="w-full btn-primary py-5 text-lg mt-4 flex items-center justify-center gap-3">
-                      Send My Free Audit <ArrowRight className="w-5 h-5" />
+                    <button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full btn-primary py-5 text-lg mt-4 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? "Sending..." : "Send My Free Audit"} <ArrowRight className="w-5 h-5" />
                     </button>
                   </form>
                   <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-6">No spam. Only high-value insights.</p>
@@ -478,6 +584,43 @@ export default function App() {
       </AnimatePresence>
 
       {/* Calendly Confirmation Modal */}
+      <AnimatePresence>
+        {showCalendly && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCalendly(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              className="relative w-full max-w-4xl bg-white rounded-[40px] shadow-2xl p-4 overflow-hidden"
+            >
+              <button 
+                onClick={() => setShowCalendly(false)}
+                className="absolute top-6 right-6 z-10 text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <X className="w-8 h-8" />
+              </button>
+              <div className="min-h-[600px] flex items-center justify-center bg-slate-50">
+                <Suspense fallback={
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">Loading Scheduler...</span>
+                  </div>
+                }>
+                  <InlineWidget url="https://calendly.com/gautammali251/30min" styles={{ height: '600px', width: '100%' }} />
+                </Suspense>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {bookingConfirmed && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -585,7 +728,18 @@ export default function App() {
             </div>
           </SectionReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Animated connecting line for desktop */}
+            <div className="hidden md:block absolute top-[140px] left-[10%] right-[10%] h-[2px] bg-slate-100 -z-0">
+               <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+                className="h-full bg-gradient-to-r from-indigo-500/0 via-indigo-600 to-indigo-500/0"
+               />
+            </div>
+
             {[
               { num: "01", title: "Strategy", icon: Layers, desc: "We deep-dive into your USP and conversion goals to map out a high-performance site structure.", delay: 0 },
               { num: "02", title: "Build", icon: Bolt, desc: "Rapid prototyping and precision development using our curated modern tech stack.", delay: 0.2 },
@@ -593,24 +747,231 @@ export default function App() {
             ].map((step, i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: step.delay }}
-                className="p-10 rounded-[40px] bg-slate-50 border border-slate-100 group hover:shadow-2xl transition-all"
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: step.delay,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+                className="relative z-10 p-10 rounded-[40px] bg-white border border-slate-100 group shadow-sm hover:shadow-[0_40px_80px_-15px_rgba(79,70,229,0.1)] transition-all duration-500"
               >
                 <motion.div 
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
-                  className="w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"
+                  whileInView={{ 
+                    scale: [0.8, 1.2, 1],
+                    rotate: [0, 15, 0]
+                  }}
+                  viewport={{ once: true }}
+                  transition={{ delay: step.delay + 0.4, duration: 0.6 }}
+                  className="w-20 h-20 rounded-3xl bg-indigo-600 shadow-xl shadow-indigo-900/20 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform relative overflow-hidden"
                 >
-                  <step.icon className="w-8 h-8 text-indigo-600" />
+                  <step.icon className="w-10 h-10 text-white relative z-10" />
+                  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                 </motion.div>
-                <div className="text-sm font-bold text-indigo-600/50 mb-3 tracking-widest">{step.num}</div>
-                <h3 className="text-3xl font-black text-slate-900 mb-4">{step.title}</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-xs font-black text-indigo-600 px-3 py-1 rounded-full bg-indigo-50 tracking-[0.2em]">{step.num}</div>
+                  <div className="h-px w-8 bg-slate-100" />
+                </div>
+                <h3 className="text-3xl font-black text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">{step.title}</h3>
                 <p className="text-slate-500 leading-relaxed font-medium">
                   {step.desc}
                 </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI Workflow Section - LaunchEngine */}
+      <section id="ai-workflow" className="py-32 bg-slate-900 overflow-hidden relative">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+        <div className="max-w-container-max mx-auto px-6 relative z-10">
+          <SectionReveal>
+            <div className="text-center mb-24">
+              <span className="text-indigo-400 font-bold text-sm tracking-[0.3em] uppercase mb-4 block">The LaunchEngine</span>
+              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-8">AI-Powered <span className="text-gradient">Efficiency</span></h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-lg font-medium">How we combine human creativity with AI horsepower to deliver 10x faster without compromising quality.</p>
+            </div>
+          </SectionReveal>
+          
+          <div className="relative mt-20">
+            {/* Background connecting beam */}
+            <div className="absolute top-[60px] left-0 w-full h-[4px] bg-white/5 overflow-hidden hidden lg:block">
+              <motion.div 
+                animate={{ x: ["-100%", "100%"] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="w-1/2 h-full bg-gradient-to-r from-transparent via-indigo-500 to-transparent shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-6">
+              {[
+                { 
+                  icon: MessageSquare, 
+                  title: "Client Input", 
+                  desc: "Raw goals, brand vibes, and specific needs captured via our smart onboarding.",
+                  color: "indigo"
+                },
+                { 
+                  icon: Brain, 
+                  title: "AI Analysis", 
+                  desc: "Our engine maps your USP against market data to create a high-converting sitemap.",
+                  color: "purple"
+                },
+                { 
+                  icon: Code, 
+                  title: "Rapid Assembly", 
+                  desc: "AI-assisted components and custom logic are woven together with surgical precision.",
+                  color: "cyan"
+                },
+                { 
+                  icon: Smartphone, 
+                  title: "Final Polish", 
+                  desc: "Human designers refine every pixel and animation for a unique, distinctive launch.",
+                  color: "white"
+                }
+              ].map((step, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.2, duration: 0.6 }}
+                  className="flex flex-col items-center text-center group"
+                >
+                  <div className={`w-32 h-32 rounded-3xl bg-slate-800 border border-white/10 flex items-center justify-center mb-8 relative group-hover:border-indigo-500/50 transition-colors shadow-2xl overflow-hidden`}>
+                    <motion.div 
+                      animate={{ 
+                        opacity: [0, 0.4, 0],
+                        scale: [1, 1.5, 1],
+                      }}
+                      transition={{ duration: 4, repeat: Infinity, delay: i * 1 }}
+                      className={`absolute inset-0 bg-indigo-500 rounded-full blur-[40px]`}
+                    />
+                    <step.icon className={`w-12 h-12 text-white relative z-10 group-hover:scale-110 transition-transform duration-500`} />
+                    
+                    {/* Floating particles */}
+                    <motion.div 
+                      animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="absolute top-4 right-4 w-1.5 h-1.5 bg-indigo-400 rounded-full blur-sm"
+                    />
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-4 tracking-tight">{step.title}</h3>
+                  <p className="text-slate-400 text-sm font-medium leading-relaxed opacity-80 px-4">
+                    {step.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Speed Indicator */}
+          <SectionReveal>
+            <div className="mt-32 max-w-4xl mx-auto bg-white/5 backdrop-blur-3xl rounded-[40px] border border-white/10 p-12 overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[100px] -z-10" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div className="text-left">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-black text-indigo-400 uppercase tracking-widest mb-6">
+                    <Zap className="w-3.5 h-3.5 fill-current" /> Speed Breakdown
+                  </div>
+                  <h4 className="text-3xl font-black text-white mb-6">Efficiency in Action</h4>
+                  <div className="space-y-6">
+                    {[
+                      { l: "Strategy Phase", v: "15 Min vs 3 Days", p: "w-[95%]" },
+                      { l: "Initial Draft", v: "2 Hours vs 7 Days", p: "w-[90%]" },
+                      { l: "Refinement", v: "24 Hours vs 14 Days", p: "w-[85%]" }
+                    ].map((row, i) => (
+                      <div key={i}>
+                        <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                          <span>{row.l}</span>
+                          <span className="text-indigo-400">{row.v}</span>
+                        </div>
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: "100%" }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.5, delay: i * 0.2 }}
+                            className={`h-full bg-gradient-to-r from-indigo-600 to-indigo-400`}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="relative flex justify-center">
+                   <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="w-64 h-64 border-2 border-dashed border-white/10 rounded-full absolute"
+                   />
+                   <div className="w-48 h-48 rounded-full bg-indigo-600/20 flex flex-col items-center justify-center border border-indigo-500/30 text-center p-6 shadow-[0_0_80px_rgba(79,70,229,0.3)]">
+                      <span className="text-5xl font-black text-white leading-none">10x</span>
+                      <span className="text-[10px] font-bold text-indigo-200 uppercase tracking-[0.2em] mt-3">Faster Delivery</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </SectionReveal>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-32 bg-white">
+        <div className="max-w-3xl mx-auto px-6">
+          <SectionReveal>
+            <div className="text-center mb-20">
+              <span className="text-indigo-600 font-bold text-sm tracking-[0.2em] uppercase mb-4 block">Common Questions</span>
+              <h2 className="text-5xl font-black text-slate-900 tracking-tighter mb-6">Frequently Asked <span className="text-gradient">Questions</span></h2>
+              <p className="text-slate-500 font-medium">Everything you need to know about our process and services.</p>
+            </div>
+          </SectionReveal>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className={`rounded-[32px] border transition-all duration-300 overflow-hidden ${
+                  activeFaq === idx 
+                    ? "bg-slate-50 border-indigo-100 shadow-xl shadow-indigo-500/5" 
+                    : "bg-white border-slate-100 hover:border-slate-200"
+                }`}
+              >
+                <button 
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full px-8 py-8 flex items-center justify-between text-left group"
+                >
+                  <span className={`text-lg font-bold transition-colors ${
+                    activeFaq === idx ? "text-indigo-600" : "text-slate-900 group-hover:text-indigo-600"
+                  }`}>
+                    {faq.q}
+                  </span>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                    activeFaq === idx ? "bg-indigo-600 text-white rotate-45" : "bg-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
+                  }`}>
+                    <Plus className="w-5 h-5" />
+                  </div>
+                </button>
+                <AnimatePresence>
+                  {activeFaq === idx && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-8 pb-8 text-slate-500 leading-relaxed font-medium">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ))}
           </div>
@@ -863,6 +1224,7 @@ export default function App() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </HelmetProvider>
   );
 }
