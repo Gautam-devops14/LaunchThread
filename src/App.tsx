@@ -1,7 +1,6 @@
 import React, { useState, useEffect, ReactNode, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { submitLead } from "./lib/firebase";
 
 const InlineWidget = lazy(() => import("react-calendly").then(module => ({ default: module.InlineWidget })));
 import { 
@@ -89,6 +88,7 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [activeSeoTab, setActiveSeoTab] = useState<number | null>(null);
 
   const faqs = [
     {
@@ -105,7 +105,7 @@ export default function App() {
     },
     {
       q: "Is hosting included in the price?",
-      a: "The ₹9,999 is for design and development. We help you set up hosting on fast, reliable platforms (like Vercel or Netlify) which often have free tiers for most businesses."
+      a: "The $299 is for design and development. We help you set up hosting on fast, reliable platforms (like Vercel or Netlify) which often have free tiers for most businesses."
     },
     {
       q: "Will my website be mobile-friendly?",
@@ -200,11 +200,99 @@ export default function App() {
     <HelmetProvider>
       <div className="min-h-screen selection:bg-indigo-100">
         <Helmet>
-          <title>{selectedProject ? selectedProject.metaTitle : "LaunchThread | Premium Websites for High-Growth Businesses"}</title>
-          <meta name="description" content={selectedProject ? selectedProject.metaDesc : "Stop losing customers to bad websites. LaunchThread builds premium, AI-designed landing pages and booking systems delivered in 48-72 hours."} />
-          <meta property="og:title" content={selectedProject ? selectedProject.metaTitle : "LaunchThread | Premium Fast Websites"} />
-          <meta property="og:description" content={selectedProject ? selectedProject.metaDesc : "Get a high-performance website in days, not months."} />
-          {selectedProject && <meta property="og:image" content={selectedProject.img} />}
+          {/* Deep SEO Title and Meta Optimization */}
+          <title>{selectedProject ? selectedProject.metaTitle : "Gautam Mali | LaunchThread - No. 1 AI Website Builder & Conversion Specialist"}</title>
+          <meta name="description" content={selectedProject ? selectedProject.metaDesc : "Stop losing customers to bad websites. Gautam Mali's LaunchThread is the leading AI website builder delivering premium, high-performance landing pages & booking systems in 48-72 hours. Top custom web developer in India and the US."} />
+          <meta name="keywords" content="Gautam, Gautam Mali, Gautam Mali web developer, Gautam Mali AI builder, Gautam Mali LaunchThread, Gautam Mali software engineer, AI website builder, AI website builder India, AI website builder US, best AI website builder, high-converting landing pages, custom React website, landing page developer USA, web design Mumbai, web design San Francisco, LaunchThread website, custom web development, conversion rate optimization, digital web agency India, SaaS landing page builder, fast business website" />
+          <meta name="author" content="Gautam Mali" />
+          <link rel="canonical" href="https://launchthread.store/" />
+          
+          {/* Robots and Indexing directives for global dominance */}
+          <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+          <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+          <meta name="geo.region" content="IN-MH, US-CA" />
+          <meta name="geo.placename" content="Mumbai, San Francisco, New York, Bangalore" />
+          <meta name="distribution" content="global" />
+          <meta name="rating" content="general" />
+
+          {/* Open Graph Tags */}
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={selectedProject ? selectedProject.metaTitle : "Gautam Mali | LaunchThread - Custom AI Website Builder"} />
+          <meta property="og:description" content={selectedProject ? selectedProject.metaDesc : "Get a custom, high-performance website designed by AI & hand-crafted by Gautam Mali in 48-72 hours. Drive sales instantly."} />
+          <meta property="og:url" content="https://launchthread.store/" />
+          <meta property="og:site_name" content="LaunchThread" />
+          <meta property="og:image" content={selectedProject ? selectedProject.img : "https://launchthread.store/s3.png"} />
+          
+          {/* Twitter Card Tags */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:creator" content="@gautam_mali" />
+          <meta name="twitter:title" content={selectedProject ? selectedProject.metaTitle : "Gautam Mali | LaunchThread - Premium AI Website Builder"} />
+          <meta name="twitter:description" content={selectedProject ? selectedProject.metaDesc : "High-performance custom landing pages & booking engines delivered in days, not months. Founded by Gautam Mali."} />
+          <meta name="twitter:image" content={selectedProject ? selectedProject.img : "https://launchthread.store/s3.png"} />
+
+          {/* JSON-LD Structured Schema Markup (Gautam Mali as Expert Person) */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": "Gautam Mali",
+              "alternateName": ["Gautam", "Gautam Mali AI Builder", "Gautam Mali Web Developer"],
+              "jobTitle": "Founder & Lead Software Engineer",
+              "worksFor": {
+                "@type": "Organization",
+                "name": "LaunchThread",
+                "url": "https://launchthread.store/"
+              },
+              "description": "Gautam Mali is an expert software developer and conversion specialist. As the founder of LaunchThread, he specializes in premium AI website design, React, and custom high-converting web apps globally.",
+              "url": "https://launchthread.store/",
+              "knowsAbout": [
+                "AI Website Builder",
+                "AI Landing Page Designer",
+                "Conversion Rate Optimization (CRO)",
+                "Full-Stack React & Vite Development",
+                "Search Engine Optimization (SEO)",
+                "Web Analytics & Marketing Funnels",
+                "Custom Database Booking Systems"
+              ],
+              "sameAs": [
+                "https://www.linkedin.com/in/gautam-mali",
+                "https://github.com/gautam-mali",
+                "https://twitter.com/gautam_mali"
+              ]
+            })}
+          </script>
+
+          {/* JSON-LD Structured Schema Markup (LaunchThread Professional Web Service) */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ProfessionalService",
+              "name": "LaunchThread",
+              "image": "https://launchthread.store/s3.png",
+              "url": "https://launchthread.store/",
+              "priceRange": "$299",
+              "telephone": "+918849422544",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Mumbai",
+                "addressRegion": "Maharashtra",
+                "addressCountry": "India"
+              },
+              "areaServed": [
+                { "@type": "Country", "name": "United States" },
+                { "@type": "Country", "name": "India" },
+                { "@type": "Country", "name": "United Kingdom" },
+                { "@type": "Country", "name": "Canada" },
+                { "@type": "Country", "name": "Australia" }
+              ],
+              "founder": {
+                "@type": "Person",
+                "name": "Gautam Mali",
+                "url": "https://launchthread.store/"
+              },
+              "description": "Premium, high-performance landing pages and business booking platforms, crafted by Gautam Mali using advanced AI-driven strategies. Delivered globally in 48-72 hours."
+            })}
+          </script>
         </Helmet>
         {/* Navigation */}
       <nav 
@@ -541,7 +629,23 @@ export default function App() {
                       const url = formData.get("websiteUrl") as string || "";
                       
                       try {
-                        await submitLead(name, email, phone, url);
+                        const response = await fetch('/api/leads', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            fullName: name,
+                            email: email,
+                            phoneNumber: phone,
+                            websiteUrl: url,
+                          }),
+                        });
+
+                        if (!response.ok) {
+                          throw new Error('Failed to submit');
+                        }
+
                         setLeadCaptured(true);
                       } catch (err) {
                         console.error(err);
@@ -561,7 +665,7 @@ export default function App() {
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Phone Number</label>
-                      <input name="phoneNumber" type="tel" required placeholder="+91 00000 00000" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
+                      <input name="phoneNumber" type="tel" required placeholder="+91 99999 99999" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 focus:ring-0 outline-none font-medium transition-all" />
                     </div>
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 mb-1 block">Website URL (Optional)</label>
@@ -1121,17 +1225,23 @@ export default function App() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[80px] -z-10 group-hover:bg-indigo-500/20 transition-all" />
                 <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-6">Founders Special</div>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-7xl font-black text-white">₹9,999</span>
+                  <span className="text-7xl font-black text-white">$299</span>
                 </div>
                 <div className="text-green-500 font-bold text-lg mb-10 flex items-center gap-2">
-                  <Zap className="w-5 h-5 fill-current" /> Save ₹15,000 Today
+                  <Zap className="w-5 h-5 fill-current" /> Save $400 Today
                 </div>
                 
                 <button 
-                  onClick={openWhatsApp}
-                  className="w-full btn-primary py-6 text-xl flex items-center justify-center gap-3 cursor-pointer"
+                  onClick={openCalendly}
+                  className="w-full btn-primary py-6 text-xl flex items-center justify-center gap-3 cursor-pointer mb-4"
                 >
-                  Book via WhatsApp <MessageSquare className="w-6 h-6" />
+                  Book Free Strategy Call <Star className="w-6 h-6 fill-current" />
+                </button>
+                <button 
+                  onClick={openWhatsApp}
+                  className="w-full btn-ghost py-4 text-sm flex items-center justify-center gap-3 cursor-pointer hover:bg-white/10"
+                >
+                  Or Chat on WhatsApp <MessageSquare className="w-5 h-5" />
                 </button>
                 
                 <div className="mt-8 flex items-center justify-center gap-6">
@@ -1170,6 +1280,118 @@ export default function App() {
               >
                 Chat on WhatsApp
               </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Global SEO & Keyword Dominance Index Hub */}
+      <section className="py-24 bg-dark-bg border-t border-white/5 text-white overflow-hidden relative">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(79,70,229,0.05),transparent_50%)]" />
+        <div className="max-w-container-max mx-auto px-6 relative z-10">
+          <SectionReveal>
+            <div className="mb-12">
+              <span className="text-indigo-400 font-mono text-xs uppercase tracking-[0.3em] mb-3 block">Global Visibility Hub</span>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                SEO Search Directory & <span className="text-gradient">Core Capabilities</span>
+              </h2>
+              <p className="text-slate-400 mt-4 max-w-3xl text-base leading-relaxed">
+                Explore our specialized technical services and keyword directories. Built for hyper-fast search performance, semantic crawls, and localized ranking across India, the United States, and worldwide.
+              </p>
+            </div>
+          </SectionReveal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Quick Keyword Pill Cloud for crawler indexing */}
+            <div className="lg:col-span-1 glass-card p-8 rounded-3xl border border-white/5 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  <Search className="w-5 h-5 text-indigo-400" /> SEO Crawler Index
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                  Semantic tags parsed by Googlebot for localized ranking indexation across multiple target markets.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Gautam", "Gautam Mali", "Gautam Mali developer", "LaunchThread", "Gautam Mali LaunchThread",
+                  "AI Website Builder US", "AI Website Builder India", "AI Website Builder", "Custom Web Developer India",
+                  "Landing Page Designer USA", "Gautam Mali software engineer", "Conversion Specialist", "No. 1 AI Web Builder"
+                ].map((kw, idx) => (
+                  <span key={idx} className="text-[10px] font-mono font-bold bg-white/5 hover:bg-indigo-500/10 hover:text-indigo-300 border border-white/10 px-2.5 py-1 rounded-full transition-all text-slate-300 cursor-default">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Accordion List filled with structured keywords */}
+            <div className="lg:col-span-3 space-y-4">
+              {[
+                {
+                  title: "Gautam Mali — Lead Developer, Founder & Conversion Specialist",
+                  keywords: "Gautam, Gautam Mali, Gautam Mali web developer, software engineer, tech founder",
+                  summary: "Looking for Gautam Mali? Gautam Mali is a premier full-stack web developer and conversion specialist. Known for building exceptionally clean, ultra-fast websites and custom web applications. As the founder of LaunchThread, Gautam Mali ensures that businesses across the United States, India, and European Union get pristine landing pages and customized workflows. With years of expertise in TypeScript, React, and server-side automation, Gautam is your go-to partner to build beautiful digital interfaces that convert cold traffic into hot leads."
+                },
+                {
+                  title: "Best AI Website Builder & Custom AI Designs (India & US)",
+                  keywords: "AI website builder, AI website builder India, AI website builder US, AI web designer",
+                  summary: "When you search for the best AI Website Builder or custom AI web design services in the USA or India, LaunchThread stands as the prime choice. Gautam Mali's LaunchThread combines artificial intelligence with manual, highly optimized software engineering. This means your business gets the speed of AI combined with the pixel-perfect quality and high-conversion mechanics of custom code. Perfectly optimized for Indian startups, SME enterprises, and fast-growing US agencies looking to double their conversion rates."
+                },
+                {
+                  title: "High-Converting Landing Pages & Custom Booking Systems",
+                  keywords: "high-converting landing pages, custom React website, local business website, booking systems",
+                  summary: "LaunchThread specializes in crafting premium, high-converting landing pages, online booking engines, patient portals, and automated reservation funnels. Every build is customized by Gautam Mali to feature local search optimizations (Local SEO) so that service providers, dentists, car washes, cafes, and gym owners immediately rank in local search maps. Our technology stacks utilize serverless storage, blazing-fast content delivery networks (CDNs), and responsive React design to ensure mobile loads under 1 second."
+                },
+                {
+                  title: "Global Reach — Serving Clients in US, India, and Worldwide",
+                  keywords: "web developer USA, web design Mumbai, web design San Francisco, digital agency India",
+                  summary: "Gautam Mali's LaunchThread operates globally, serving high-growth brands in San Francisco, New York, Mumbai, Bangalore, and beyond. We understand the specific economic and performance requirements of both western and eastern markets. Whether you need an eye-safe, premium dark-mode portfolio, or an incredibly clean corporate application, LaunchThread delivers in 48 to 72 hours, backed by standard compliance, strict security guidelines, and optional global CDN caching."
+                }
+              ].map((item, idx) => {
+                const isOpen = activeSeoTab === idx;
+                return (
+                  <div 
+                    key={idx}
+                    className={`glass-card rounded-3xl border transition-all duration-300 overflow-hidden ${
+                      isOpen ? "border-indigo-500/30 bg-indigo-500/5 shadow-lg shadow-indigo-950/20" : "border-white/5 hover:border-white/10"
+                    }`}
+                  >
+                    <button
+                      onClick={() => setActiveSeoTab(isOpen ? null : idx)}
+                      className="w-full text-left px-8 py-6 flex justify-between items-center gap-6 cursor-pointer"
+                    >
+                      <div>
+                        <h4 className="font-bold text-white text-base md:text-lg mb-1">{item.title}</h4>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono text-indigo-400 uppercase tracking-wider">Semantic Focus:</span>
+                          <span className="text-[10px] font-mono text-slate-500 font-semibold truncate max-w-[280px] md:max-w-none">{item.keywords}</span>
+                        </div>
+                      </div>
+                      <div className={`w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-45 text-white bg-indigo-600/20 border-indigo-500/30" : ""}`}>
+                        <Plus className="w-4 h-4" />
+                      </div>
+                    </button>
+                    
+                    <div 
+                      className={`transition-all duration-500 ease-in-out ${
+                        isOpen ? "max-h-[300px] border-t border-white/5 py-6 px-8" : "max-h-0"
+                      } overflow-hidden`}
+                    >
+                      <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                        {item.summary}
+                      </p>
+                      <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+                        {item.keywords.split(", ").map((tag, tIdx) => (
+                          <span key={tIdx} className="text-[9px] font-mono font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded">
+                            #{tag.toLowerCase().replace(/\s+/g, '')}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

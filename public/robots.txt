@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Host & Sitemap setup for Google and other search engines
+Host: https://launchthread.store
+Sitemap: https://launchthread.store/sitemap.xml
