@@ -88,7 +88,6 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [activeSeoTab, setActiveSeoTab] = useState<number | null>(null);
 
   const faqs = [
     {
@@ -1280,118 +1279,6 @@ export default function App() {
               >
                 Chat on WhatsApp
               </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Global SEO & Keyword Dominance Index Hub */}
-      <section className="py-24 bg-dark-bg border-t border-white/5 text-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(79,70,229,0.05),transparent_50%)]" />
-        <div className="max-w-container-max mx-auto px-6 relative z-10">
-          <SectionReveal>
-            <div className="mb-12">
-              <span className="text-indigo-400 font-mono text-xs uppercase tracking-[0.3em] mb-3 block">Global Visibility Hub</span>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-                SEO Search Directory & <span className="text-gradient">Core Capabilities</span>
-              </h2>
-              <p className="text-slate-400 mt-4 max-w-3xl text-base leading-relaxed">
-                Explore our specialized technical services and keyword directories. Built for hyper-fast search performance, semantic crawls, and localized ranking across India, the United States, and worldwide.
-              </p>
-            </div>
-          </SectionReveal>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Quick Keyword Pill Cloud for crawler indexing */}
-            <div className="lg:col-span-1 glass-card p-8 rounded-3xl border border-white/5 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <Search className="w-5 h-5 text-indigo-400" /> SEO Crawler Index
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                  Semantic tags parsed by Googlebot for localized ranking indexation across multiple target markets.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Gautam", "Gautam Mali", "Gautam Mali developer", "LaunchThread", "Gautam Mali LaunchThread",
-                  "AI Website Builder US", "AI Website Builder India", "AI Website Builder", "Custom Web Developer India",
-                  "Landing Page Designer USA", "Gautam Mali software engineer", "Conversion Specialist", "No. 1 AI Web Builder"
-                ].map((kw, idx) => (
-                  <span key={idx} className="text-[10px] font-mono font-bold bg-white/5 hover:bg-indigo-500/10 hover:text-indigo-300 border border-white/10 px-2.5 py-1 rounded-full transition-all text-slate-300 cursor-default">
-                    {kw}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Accordion List filled with structured keywords */}
-            <div className="lg:col-span-3 space-y-4">
-              {[
-                {
-                  title: "Gautam Mali — Lead Developer, Founder & Conversion Specialist",
-                  keywords: "Gautam, Gautam Mali, Gautam Mali web developer, software engineer, tech founder",
-                  summary: "Looking for Gautam Mali? Gautam Mali is a premier full-stack web developer and conversion specialist. Known for building exceptionally clean, ultra-fast websites and custom web applications. As the founder of LaunchThread, Gautam Mali ensures that businesses across the United States, India, and European Union get pristine landing pages and customized workflows. With years of expertise in TypeScript, React, and server-side automation, Gautam is your go-to partner to build beautiful digital interfaces that convert cold traffic into hot leads."
-                },
-                {
-                  title: "Best AI Website Builder & Custom AI Designs (India & US)",
-                  keywords: "AI website builder, AI website builder India, AI website builder US, AI web designer",
-                  summary: "When you search for the best AI Website Builder or custom AI web design services in the USA or India, LaunchThread stands as the prime choice. Gautam Mali's LaunchThread combines artificial intelligence with manual, highly optimized software engineering. This means your business gets the speed of AI combined with the pixel-perfect quality and high-conversion mechanics of custom code. Perfectly optimized for Indian startups, SME enterprises, and fast-growing US agencies looking to double their conversion rates."
-                },
-                {
-                  title: "High-Converting Landing Pages & Custom Booking Systems",
-                  keywords: "high-converting landing pages, custom React website, local business website, booking systems",
-                  summary: "LaunchThread specializes in crafting premium, high-converting landing pages, online booking engines, patient portals, and automated reservation funnels. Every build is customized by Gautam Mali to feature local search optimizations (Local SEO) so that service providers, dentists, car washes, cafes, and gym owners immediately rank in local search maps. Our technology stacks utilize serverless storage, blazing-fast content delivery networks (CDNs), and responsive React design to ensure mobile loads under 1 second."
-                },
-                {
-                  title: "Global Reach — Serving Clients in US, India, and Worldwide",
-                  keywords: "web developer USA, web design Mumbai, web design San Francisco, digital agency India",
-                  summary: "Gautam Mali's LaunchThread operates globally, serving high-growth brands in San Francisco, New York, Mumbai, Bangalore, and beyond. We understand the specific economic and performance requirements of both western and eastern markets. Whether you need an eye-safe, premium dark-mode portfolio, or an incredibly clean corporate application, LaunchThread delivers in 48 to 72 hours, backed by standard compliance, strict security guidelines, and optional global CDN caching."
-                }
-              ].map((item, idx) => {
-                const isOpen = activeSeoTab === idx;
-                return (
-                  <div 
-                    key={idx}
-                    className={`glass-card rounded-3xl border transition-all duration-300 overflow-hidden ${
-                      isOpen ? "border-indigo-500/30 bg-indigo-500/5 shadow-lg shadow-indigo-950/20" : "border-white/5 hover:border-white/10"
-                    }`}
-                  >
-                    <button
-                      onClick={() => setActiveSeoTab(isOpen ? null : idx)}
-                      className="w-full text-left px-8 py-6 flex justify-between items-center gap-6 cursor-pointer"
-                    >
-                      <div>
-                        <h4 className="font-bold text-white text-base md:text-lg mb-1">{item.title}</h4>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-indigo-400 uppercase tracking-wider">Semantic Focus:</span>
-                          <span className="text-[10px] font-mono text-slate-500 font-semibold truncate max-w-[280px] md:max-w-none">{item.keywords}</span>
-                        </div>
-                      </div>
-                      <div className={`w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-45 text-white bg-indigo-600/20 border-indigo-500/30" : ""}`}>
-                        <Plus className="w-4 h-4" />
-                      </div>
-                    </button>
-                    
-                    <div 
-                      className={`transition-all duration-500 ease-in-out ${
-                        isOpen ? "max-h-[300px] border-t border-white/5 py-6 px-8" : "max-h-0"
-                      } overflow-hidden`}
-                    >
-                      <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                        {item.summary}
-                      </p>
-                      <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
-                        {item.keywords.split(", ").map((tag, tIdx) => (
-                          <span key={tIdx} className="text-[9px] font-mono font-bold text-slate-500 bg-white/5 px-2 py-0.5 rounded">
-                            #{tag.toLowerCase().replace(/\s+/g, '')}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </div>
